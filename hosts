@@ -1,0 +1,15 @@
+[kubernetescluster]
+  kubemaster01 ansible_host=127.0.0.1 ansible_port=2222
+  kubemaster02 ansible_host=127.0.0.1 ansible_port=2200
+  kubemaster03 ansible_host=127.0.0.1 ansible_port=2201
+  kubenode01 ansible_host=127.0.0.1 ansible_port=2202
+  kubenode02 ansible_host=127.0.0.1 ansible_port=2203
+
+[masters]
+  kubemaster01 ansible_host=127.0.0.1 ansible_port=2222
+  kubemaster02 ansible_host=127.0.0.1 ansible_port=2200
+  kubemaster03 ansible_host=127.0.0.1 ansible_port=2201
+
+[workers]
+  kubenode01 ansible_host=127.0.0.1 ansible_port=2202
+  kubenode02 ansible_host=127.0.0.1 ansible_port=2203  
