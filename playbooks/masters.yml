@@ -1,19 +1,20 @@
 - hosts: masters
   become: yes
-  become_user: root
+  gather_facts: true
   tasks:
-    - name: Remove swapfile from /etc/fstab
-      mount:
-        name: swap
-        fstype: swap
-        state: absent
 
-    - name: Disable swap
-      command: swapoff -a
-      when: ansible_swaptotal_mb > 0 
-    
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted
+
+    - name: pause for 30 seconds
+      pause:
+        prompt: Pausing 30 seconds before running kubeadm init command...
+        seconds: 30
+
     - name: initialize the cluster
-      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
+      command: kubeadm init --apiserver-advertise-address=172.28.128.4 --pod-network-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
 
     - name: create .kube directory
       file:
@@ -28,8 +29,12 @@
         remote_src: yes
         owner: root
 
-    - name: install Pod network
+    - name: install pod network
       shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml >> pod_network_setup.txt
       args:
         chdir: $HOME
         creates: pod_network_setup.txt
+
+
+- name: register worker nodes
+  import_playbook: workers.yml

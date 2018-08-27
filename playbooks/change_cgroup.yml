@@ -23,4 +23,6 @@
         - docker
         - kubelet
 
+- name: register master node
+  import_playbook: masters.yml
 

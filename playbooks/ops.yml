@@ -1,0 +1,22 @@
+- hosts: kubemaster01
+  become: yes
+  gather_facts: false
+  tasks:
+
+    - name: move namespaces template
+      template:
+        src: /etc/ansible/templates/{{ item }}.yaml.j2
+        dest: /tmp/{{ item }}.yaml
+        owner: root
+        group: root
+        mode: 0744
+      with_items:
+        - dev
+        - prod
+
+    - name: create namespaces
+      command: kubectl create -f /tmp/{{ item }}.yaml
+      with_items:
+        - dev
+        - prod
+
