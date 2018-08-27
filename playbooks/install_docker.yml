@@ -1,0 +1,45 @@
+---
+
+- name: Install docker
+  gather_facts: false
+  hosts: kubernetescluster
+  become: yes
+  tasks:
+    
+    - name: install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+
+    - name: install lvm2
+      yum:
+        name: lvm2
+        state: latest
+
+    - name: add docker-ce repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+
+    - name: install docker
+      yum:
+        name: docker-ce
+        state: latest
+    
+    - name: start docker service
+      service: 
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: add user vagrant to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+

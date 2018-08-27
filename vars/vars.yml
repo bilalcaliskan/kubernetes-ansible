@@ -1,0 +1,6 @@
+---
+
+host_ip: "{{ ansible_eth1.ipv4.address }}"
+kubemaster01: "kubemaster01"
+kubenode01: "kubenode01"
+kubenode02: "kubenode02"

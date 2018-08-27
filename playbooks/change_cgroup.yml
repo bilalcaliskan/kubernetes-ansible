@@ -1,0 +1,26 @@
+- hosts: kubernetescluster
+  become: yes
+  gather_facts: false
+  tasks:
+    
+    - name: copy template to the /usr/lib/systemd/system/docker.service
+      template:
+        src: /etc/ansible/templates/docker.service.j2
+        dest: /usr/lib/systemd/system/docker.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: force systemd to reload
+      systemd:
+        daemon_reload: yes
+
+    - name: restart docker and kubelet daemons
+      service:
+        name: "{{ item }}"
+        state: restarted
+      with_items:
+        - docker
+        - kubelet
+
+

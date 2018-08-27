@@ -1,35 +1,49 @@
 - hosts: kubernetescluster
   become: yes
+  vars_files:
+    - /etc/ansible/vars/vars.yml
+  gather_facts: true
   tasks:
-   - name: remove docker if installed
-     yum:
-       name: "docker*"
-       state: absent
 
-   - name: re-install Docker
-     yum:
-       name: docker
+   - name: Add IP address of all hosts to all hosts
+     lineinfile:
+       dest: /etc/hosts
+       line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ hostvars[item].inventory_hostname }}"
        state: present
-       update_cache: true
-
+     with_items:
+       - kubemaster01
+       - kubenode01
+       - kubenode02
+   
    - name: ensure a list of packages installed
      yum:
        name: "{{ packages }}"
      vars:
        packages:
-       - docker
-
-   - name: start Docker
-     service:
-       name: docker
-       state: started
-
-   - name: disable SELinux
-     command: setenforce 0
-
-   - name: disable SELinux on reboot
+       - vim
+       - wget
+       - git
+       - telnet
+       - net-tools
+   
+   - name: disable selinux temporarily
+     register: selinux_temp
      selinux:
        state: disabled
+
+   - name: disable selinux permanently
+     template:
+       src: /etc/ansible/templates/config.j2
+       dest: /etc/selinux/config
+       owner: root
+       group: root
+       mode: 0644
+
+   # enable br_netfilter kernel module to allow kubernetes pods to communicate across the cluster
+   - name: enable br_netfilter
+     modprobe:
+       name: br_netfilter
+       state: present
 
    - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
      sysctl:
@@ -43,35 +57,20 @@
       value: 1
       state: present
 
-   - name: add Kubernetes' YUM repository
-     yum_repository:
-      name: Kubernetes
-      description: Kubernetes YUM repository
-      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-      gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-      gpgcheck: yes
+   - name: remove swapfile from /etc/fstab
+     mount:
+       name: swap
+       fstype: swap
+       state: absent
 
-   - name: install kubelet
-     yum:
-        name: kubelet
-        state: present
-        update_cache: true
+   - name: disable swap
+     command: swapoff -a
+     when: ansible_swaptotal_mb > 0
 
-   - name: install kubeadm
-     yum:
-        name: kubeadm
-        state: present
 
-   - name: start kubelet
-     service:
-       name: kubelet
-       enabled: yes
-       state: started
+- name: install docker-ce
+  import_playbook: install_docker.yml
 
-- hosts: masters
-  become: yes
-  tasks:
-   - name: install kubectl
-     yum:
-        name: kubectl
-        state: present
+- name: install kubernetes
+  import_playbook: install_kubernetes.yml
+

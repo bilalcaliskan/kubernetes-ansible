@@ -1,0 +1,59 @@
+---
+
+- name: install kubernetes
+  gather_facts: false
+  hosts: kubernetescluster
+  tasks:
+    
+    - name: add Kubernetes' YUM repository
+      yum_repository:
+        name: Kubernetes
+        description: Kubernetes YUM repository
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        gpgcheck: yes
+    
+    - name: install kubelet
+      yum:
+        name: kubelet
+        state: latest
+
+    - name: install kubeadm
+      yum:
+        name: kubeadm
+        state: latest
+
+    - name: install kubectl
+      yum:
+        name: kubectl
+        state: latest
+
+    - name: Reboot server
+      shell: /sbin/shutdown -r +1
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+    - name: wait for hosts to restart
+      wait_for_connection:
+        delay: 30
+        timeout: 300
+    
+    - name: execute uptime command
+      shell: uptime
+
+    - name: start and enable docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: start and enable kubelet service
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
+
+- name: change cgroup-driver of docker
+  import_playbook: change_cgroup.yml
+
