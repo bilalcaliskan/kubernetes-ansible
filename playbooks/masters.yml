@@ -14,7 +14,7 @@
         seconds: 30
 
     - name: initialize the cluster
-      command: kubeadm init --apiserver-advertise-address=172.28.128.4 --pod-network-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
+      command: kubeadm init --apiserver-advertise-address=$(hostname --ip-address) --pod-network-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
 
     - name: create .kube directory
       file:
