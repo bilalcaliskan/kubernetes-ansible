@@ -3,6 +3,10 @@
   gather_facts: true
   tasks:
 
+    - name: start of play debug message
+      debug:
+        msg: "masters playbook is starting for {{ inventory_hostname }}"
+          
     - name: restart sshd
       service:
         name: sshd

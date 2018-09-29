@@ -2,7 +2,11 @@
   become: yes
   gather_facts: false
   tasks:
-    
+
+    - name: start of play debug message
+      debug:
+        msg: "change_cgroup playbook is starting for {{ inventory_hostname }}"
+
     - name: copy template to the /usr/lib/systemd/system/docker.service
       template:
         src: /etc/ansible/templates/docker.service.j2

@@ -3,6 +3,10 @@
   gather_facts: false
   tasks:
 
+    - name: start of play debug message
+      debug:
+        msg: "workers playbook is starting for {{ inventory_hostname }}"
+
     - name: get join command
       shell: kubeadm token create --print-join-command
       register: join_command_raw
@@ -15,6 +19,11 @@
 - hosts: workers
   become: yes
   tasks:
+
+    - name: start of play debug message
+      debug:
+        msg: "workers playbook is starting for {{ inventory_hostname }}"
+           
     - name: join cluster
       shell: "{{ hostvars[item].join_command }} >> node_joined.txt"
       args:

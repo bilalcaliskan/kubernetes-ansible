@@ -5,7 +5,11 @@
   hosts: kubernetescluster
   tasks:
     
-    - name: add Kubernetes' YUM repository
+    - name: start of play debug message
+      debug:
+        msg: "install_kubernetes playbook is starting for {{ inventory_hostname }}"
+ 
+    - name: add Kubernetes' yum repository
       yum_repository:
         name: Kubernetes
         description: Kubernetes YUM repository
