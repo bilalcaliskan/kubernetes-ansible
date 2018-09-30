@@ -17,20 +17,23 @@
         gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
         gpgcheck: yes
     
+    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3    
     - name: install kubelet
       yum:
-        name: kubelet
-        state: latest
+        name: kubelet-1.11.3
+        state: present
 
+    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3 
     - name: install kubeadm
       yum:
-        name: kubeadm
-        state: latest
+        name: kubeadm-1.11.3
+        state: present
 
+    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3     
     - name: install kubectl
       yum:
-        name: kubectl
-        state: latest
+        name: kubectl-1.11.3
+        state: present
 
     - name: Reboot server
       shell: /sbin/shutdown -r +1
