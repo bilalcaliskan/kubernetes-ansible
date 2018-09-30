@@ -14,7 +14,19 @@
        - kubemaster01
        - kubenode01
        - kubenode02
-   
+
+   - name: remove /var/cache/yum
+     file:
+       path: /var/cache/yum
+       state: absent
+
+   - name: Upgrade all packages
+     yum:
+       name: "*"
+       state: latest
+       update_cache: yes
+     when: ansible_distribution == "CentOS"
+
    - name: ensure a list of packages installed
      yum:
        name: "{{ packages }}"
@@ -25,6 +37,7 @@
        - git
        - telnet
        - net-tools
+     when: ansible_distribution == "CentOS"
    
    - name: disable selinux temporarily
      register: selinux_temp
