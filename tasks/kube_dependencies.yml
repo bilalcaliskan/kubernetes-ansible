@@ -80,6 +80,11 @@
      command: swapoff -a
      when: ansible_swaptotal_mb > 0
 
+   - name: disable service firewalld and ensure it is masked
+     systemd:
+       name: firewalld
+       enabled: no
+       masked: yes
 
 - name: install docker-ce
   import_playbook: install_docker.yml
