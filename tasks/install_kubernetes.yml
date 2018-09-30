@@ -49,6 +49,20 @@
     - name: execute uptime command
       shell: uptime
 
+    - name: edit /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf on each node
+      template:
+        src: /etc/ansible/templates/10-kubeadm.conf.j2
+        dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: daemon-reload and restart kubelet.service
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: kubelet
+
     - name: start and enable docker service
       service:
         name: docker

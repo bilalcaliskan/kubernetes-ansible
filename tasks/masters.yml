@@ -7,9 +7,8 @@
       debug:
         msg: "masters playbook is starting for {{ inventory_hostname }}"
           
-
     - name: initialize the cluster
-      command: kubeadm init --apiserver-advertise-address=172.28.128.4 --pod-network-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
+      command: kubeadm init --apiserver-advertise-address=172.28.128.3 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
 
     - name: create .kube directory
       file:
@@ -29,9 +28,8 @@
         prompt: Pausing 10 seconds before initializing pod network...
         seconds: 10
 
-
-    - name: install pod network
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml >> pod_network_setup.txt
+    - name: install flannel pod network
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml >> /root/pod_network_setup.txt
       args:
         chdir: $HOME
         creates: pod_network_setup.txt
