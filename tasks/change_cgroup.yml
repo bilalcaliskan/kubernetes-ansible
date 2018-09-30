@@ -1,3 +1,5 @@
+---
+
 - hosts: kubernetescluster
   become: yes
   gather_facts: false
@@ -9,7 +11,7 @@
 
     - name: copy template to the /usr/lib/systemd/system/docker.service
       template:
-        src: /etc/ansible/templates/docker.service.j2
+        src: /etc/kubernetes-ansible/templates/docker.service.j2
         dest: /usr/lib/systemd/system/docker.service
         owner: root
         group: root

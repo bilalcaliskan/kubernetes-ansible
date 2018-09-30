@@ -1,8 +1,10 @@
+---
+
 - hosts: masters
   become: yes
+  vars_files:
+    - /etc/kubernetes-ansible/vars/vars.yml
   gather_facts: true
-  include_vars:
-    dir: /etc/ansible/vars
   tasks:
 
     - name: start of play debug message
@@ -10,7 +12,7 @@
         msg: "masters playbook is starting for {{ inventory_hostname }}"
           
     - name: initialize the cluster
-      command: "kubeadm init --apiserver-advertise-address=\"{{ host_ip }}\" --pod-network-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt"
+      command: "kubeadm init --apiserver-advertise-address=\"{{ host_ip }}\" --pod-network-cidr=\"{{ pod_network_cidr }}\" >> /root/cluster_initialized.txt"
       #      command: kubeadm init --apiserver-advertise-address=172.28.128.3 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.244.0.0/16 >> /root/cluster_initialized.txt
 
     - name: create .kube directory
@@ -31,8 +33,16 @@
         prompt: Pausing 10 seconds before initializing pod network...
         seconds: 10
 
-    - name: install flannel pod network
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml >> /root/pod_network_setup.txt
+    - name: copy kube_flannel.yml template to the /tmp
+      template:
+        src: /etc/kubernetes-ansible/templates/kube_flannel.yml.j2
+        dest: /tmp/kube_flannel.yml
+        owner: root
+        group: root
+        mode: 0644
+      
+    - name: install pod network from template  
+      shell: kubectl apply -f /tmp/kube_flannel.yml >> /root/pod_network_setup.txt
       args:
         chdir: $HOME
         creates: pod_network_setup.txt
