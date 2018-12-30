@@ -1,0 +1,6 @@
+---
+
+- include: "inventory/os_update.yml"
+
+- include: "inventory/install_kubernetes.yml"
+
