@@ -13,7 +13,7 @@
  
     - name: add Kubernetes' yum repository
       yum_repository:
-        name: Kubernetes
+        name: kubernetes
         description: Kubernetes YUM repository
         baseurl: "{{ kubernetes_base_url }}"
         gpgkey: "{{ kubernetes_gpg_key }}"
