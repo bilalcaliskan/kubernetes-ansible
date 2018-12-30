@@ -18,24 +18,32 @@
         baseurl: "{{ kubernetes_base_url }}"
         gpgkey: "{{ kubernetes_gpg_key }}"
         gpgcheck: yes
-    
+        enabled: no
+      register: yum_addrepo_result
+
     # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3    
     - name: install kubelet
       yum:
         name: kubelet-1.11.3
         state: present
+        enablerepo: kubernetes
+      register: yum_kubelet_result
 
     # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3 
     - name: install kubeadm
       yum:
         name: kubeadm-1.11.3
         state: present
+        enablerepo: kubernetes
+      register: yum_kubeadm_result
 
     # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3     
     - name: install kubectl
       yum:
         name: kubectl-1.11.3
         state: present
+        enablerepo: kubernetes
+      register: yum_kubectl_result
 
     - name: edit /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf on each node
       template:
@@ -50,19 +58,23 @@
         state: restarted
         daemon_reload: yes
         name: kubelet
+      register: restart_kubelet_result
 
     - name: start and enable docker service
       service:
         name: docker
         state: started
         enabled: yes
+      register: start_docker_result
 
     - name: start and enable kubelet service
       service:
         name: kubelet
         state: started
         enabled: yes
+      register: start_kubelet_result
 
 - name: change cgroup-driver of docker
   import_playbook: change_cgroup.yml
+
 
