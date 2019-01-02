@@ -1,0 +1,56 @@
+---
+
+- name: import variables
+  include_vars: 
+  - "os_{{ ansible_facts['distribution'] }}.yml"
+  - main.yml
+  tags:
+  - import
+  - kube-dependencies
+
+- name: Add IP address of all hosts to all hosts
+  lineinfile:
+    dest: "{{ hosts_file_path }}"
+    line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ hostvars[item].inventory_hostname }}"
+    state: present
+  with_items: "{{ nodes }}"
+  tags: kube-dependencies
+
+- name: remove /var/cache/apt
+  file:
+    path: "{{ apt_cache_path }}"
+    state: absent
+  tags: kube-dependencies
+
+- name: add Kubernetes apt-key
+  apt_key:
+    url: "{{ kubernetes_gpg_key_url }}"
+    state: present
+  tags: kube-dependencies
+
+- name: add Kubernetes' APT repository
+  apt_repository:
+    repo: "{{ kubernetes_apt_line }}"
+    state: present
+    filename: kubernetes
+  tags: kube-dependencies
+
+- name: install kubelet
+  apt:
+    name: kubelet
+    state: present
+    update_cache: true
+  tags: kube-dependencies
+
+- name: install kubeadm
+  apt:
+    name: kubeadm
+    state: present
+  tags: kube-dependencies
+
+- name: install kubectl on masters
+  apt:
+    name: kubectl
+    state: present
+  when: "inventory_hostname in groups['masters']"
+  tags: kube-dependencies

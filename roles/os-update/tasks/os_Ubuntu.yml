@@ -6,11 +6,10 @@
   - import
   - os-update
 
-- name: update repository cache and upgrade all packages
+- name: update repository cache and upgrade all packages with full-upgrade option
   apt:
     update_cache: yes
-    name: "*"
-    state: latest
+    upgrade: full
   tags: os-update
 
 - name: install required packages
@@ -25,3 +24,7 @@
     autoclean: yes
   tags: os-update
 
+- name: remove packages that are no longer required and automatically installed
+  apt:
+    autoremove: yes
+  tags: os-update
