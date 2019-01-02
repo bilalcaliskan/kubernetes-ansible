@@ -1,0 +1,27 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
+  tags:
+  - import
+  - os-update
+
+- name: update repository cache and upgrade all packages
+  apt:
+    update_cache: yes
+    name: "*"
+    state: latest
+  tags: os-update
+
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ required_packages }}"
+  tags: os-update
+
+- name: remove useless packages from the cache
+  apt:
+    autoclean: yes
+  tags: os-update
+

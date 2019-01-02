@@ -1,16 +1,10 @@
 ---
 
 - name: import variables
-  include_vars: "main.yml"
+  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
   tags:
   - import
   - os-update
-
-# after below play, ansible created a host group called "os_CentOS"
-- name: classify hosts depending on their OS distribution with gathering some facts
-  group_by:
-    key: os_{{ ansible_facts['distribution'] }}
-  tags: os-update
 
 - name: update all packages on masters
   yum: 

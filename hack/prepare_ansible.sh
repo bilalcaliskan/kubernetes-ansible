@@ -17,6 +17,3 @@ else
 	sudo pip install ansible
 fi
 
-echo "cloning kubernetes-ansible repo, because you are on control node"
-sudo wget https://codeload.github.com/bilalcaliskan/kubernetes-ansible/zip/master
-sudo unzip -o master -d /etc/.

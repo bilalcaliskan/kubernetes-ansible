@@ -1,0 +1,33 @@
+---
+
+- name: determine the operating system
+  hosts: kubernetes-cluster
+  tasks:
+  
+  - name: classify hosts depending on their OS distribution with gathering some facts        
+    group_by:
+      key: os_{{ ansible_facts['distribution'] }}
+    tags: os-update
+
+- name: prepare cluster for CentOS hosts
+  hosts: os_CentOS
+  gather_facts: false
+  tasks:
+
+  - name: import os-update role for CentOS hosts
+    import_role:
+      name: os-update
+      tasks_from: os_CentOS.yml
+    tags: prepare_cluster
+
+- name: prepare cluster for Ubuntu hosts
+  hosts: os_Ubuntu
+  gather_facts: false
+  tasks:
+
+  - name: import os-update role for Ubuntu hosts
+    import_role:
+      name: os-update
+      tasks_from: os_Ubuntu.yml
+    tags: prepare_cluster
+
