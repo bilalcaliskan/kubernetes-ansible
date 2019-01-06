@@ -5,32 +5,33 @@
   hosts: kubernetescluster
   tasks:
     
-  - name: classify hosts depending on their OS distribution with gathering some facts        
+  - name: classify hosts depending on their OS family with gathering some facts        
     group_by:
-      key: os_{{ ansible_facts['distribution'] }}
-    tags: os-update
-
-- name: install kubernetes for CentOS hosts
-  hosts: os_CentOS
-  gather_facts: false
-  tasks:
-
-  - name: import kube-dependencies role for CentOS hosts
-    import_role:
-      name: kube-dependencies
-      tasks_from: os_CentOS.yml
-    tags: 
+      key: os_{{ ansible_facts['os_family'] }}
+    tags:
     - install_kubernetes
     - kube-dependencies
 
-- name: import kube-dependencies role for Ubuntu hosts
-  hosts: os_Ubuntu
+- name: import kube-dependencies role for RedHat based hosts
+  hosts: os_RedHat
   gather_facts: false
   tasks:
 
   - import_role:
       name: kube-dependencies
-      tasks_from: os_Ubuntu.yml
+      tasks_from: os_RedHat.yml
+    tags: 
+    - install_kubernetes
+    - kube-dependencies
+
+- name: import kube-dependencies role for Debian based hosts
+  hosts: os_Debian
+  gather_facts: false
+  tasks:
+
+  - import_role:
+      name: kube-dependencies
+      tasks_from: os_Debian.yml
     tags:
     - install_kubernetes
     - kube-dependencies
