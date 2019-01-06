@@ -1,19 +1,25 @@
 #!/bin/bash
 
-echo "checking which package manager to use..."
-if [ -n "$(sudo which yum)" ]
+echo "checking if ansible is installed..."
+
+if [[ ! -n "$(sudo which ansible)" ]]
 then
-	echo "package manager of OS is yum, installing ansible with yum..."
-	sudo yum install ansible unzip
-elif [ -n "$(which apt)" ]
-then
-	echo "package manager of OS is apt, installing ansible with apt..."
-	sudo apt-get update
-	sudo apt-get install -y software-properties-common
-	sudo apt-get install -y ansible unzip
-else
-	echo "could not determine the OS, installing ansible with python package manager pip..."
+	if [[ -n "$(sudo which yum)" && ! -n "$(sudo which easy_install)" ]]
+	then
+		echo "package manager of OS is yum and easy_install is not installed, installing..."
+		sudo yum install python-setuptools
+	elif [[ -n "$(which apt)" && ! -n "$(sudo which easy_install)" ]]
+	then
+		echo "package manager of OS is apt and easy_install is not installed, installing..."
+		sudo apt-get update
+		sudo apt-get install python-setuptools
+	fi
+
 	sudo easy_install pip
 	sudo pip install ansible
+else
+	echo "ansible is already installed, exiting..."
+	exit 0
 fi
+
 

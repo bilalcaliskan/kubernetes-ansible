@@ -2,79 +2,48 @@
 
 - name: install kubernetes
   gather_facts: false
-  vars_files:
-    - /etc/kubernetes-ansible/vars/vars.yml
   hosts: kubernetescluster
   tasks:
     
-    - name: start of play debug message
-      debug:
-        msg: "install_kubernetes playbook is starting for {{ inventory_hostname }}"
- 
-    - name: add Kubernetes' yum repository
-      yum_repository:
-        name: kubernetes
-        description: Kubernetes YUM repository
-        baseurl: "{{ kubernetes_base_url }}"
-        gpgkey: "{{ kubernetes_gpg_key }}"
-        gpgcheck: yes
-        enabled: no
-      register: yum_addrepo_result
+  - name: classify hosts depending on their OS distribution with gathering some facts        
+    group_by:
+      key: os_{{ ansible_facts['distribution'] }}
+    tags: os-update
 
-    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3    
-    - name: install kubelet
-      yum:
-        name: kubelet-1.11.3
-        state: present
-        enablerepo: kubernetes
-      register: yum_kubelet_result
+- name: install kubernetes for CentOS hosts
+  hosts: os_CentOS
+  gather_facts: false
+  tasks:
 
-    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3 
-    - name: install kubeadm
-      yum:
-        name: kubeadm-1.11.3
-        state: present
-        enablerepo: kubernetes
-      register: yum_kubeadm_result
+  - name: import kube-dependencies role for CentOS hosts
+    import_role:
+      name: kube-dependencies
+      tasks_from: os_CentOS.yml
+    tags: 
+    - install_kubernetes
+    - kube-dependencies
 
-    # kubelet-1.12.0 can not work with flannel 0.10.0, so we will install 1.11.3     
-    - name: install kubectl
-      yum:
-        name: kubectl-1.11.3
-        state: present
-        enablerepo: kubernetes
-      register: yum_kubectl_result
+- name: import kube-dependencies role for Ubuntu hosts
+  hosts: os_Ubuntu
+  gather_facts: false
+  tasks:
 
-    - name: edit /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf on each node
-      template:
-        src: /etc/kubernetes-ansible/templates/10-kubeadm.conf.j2
-        dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-        owner: root
-        group: root
-        mode: 0644
+  - import_role:
+      name: kube-dependencies
+      tasks_from: os_Ubuntu.yml
+    tags:
+    - install_kubernetes
+    - kube-dependencies
 
-    - name: daemon-reload and restart kubelet.service
-      systemd:
-        state: restarted
-        daemon_reload: yes
-        name: kubelet
-      register: restart_kubelet_result
+- name: import docker role for all hosts
+  hosts: kubernetes-cluster
+  gather_facts: false
+  tasks:
 
-    - name: start and enable docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-      register: start_docker_result
-
-    - name: start and enable kubelet service
-      service:
-        name: kubelet
-        state: started
-        enabled: yes
-      register: start_kubelet_result
-
-- name: change cgroup-driver of docker
-  import_playbook: change_cgroup.yml
-
+  - import_role:
+      name: docker
+      tasks_from: main.yml
+    tags:
+    - install_kubernetes
+    - docker
 
