@@ -6,12 +6,6 @@
   - import
   - os-update
 
-- name: import handlers
-  include_tasks: "os_RedHat.yml"
-  tags:
-  - import
-  - docker
-
 - name: update all packages on masters
   yum: 
     name: "*"
@@ -63,12 +57,12 @@
   wait_for_connection:
     delay: 30
     timeout: 300
-  when: "inventory_hostname in groups['workers']"
+  when: "inventory_hostname in groups['masters']"
   tags: os-update
  
 - name: execute uptime command
   shell: uptime
-  when: "inventory_hostname in groups['workers']"
+  when: "inventory_hostname in groups['masters']"
   register: uptime_result
   tags: os-update
 
