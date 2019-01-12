@@ -2,5 +2,6 @@
 
 - include: "inventory/os_update.yml"
 
-- include: "inventory/install_kubernetes.yml"
+- include: "inventory/preparation.yml"
 
+- include: "inventory/docker.yml"
