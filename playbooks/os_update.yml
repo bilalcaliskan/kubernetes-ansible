@@ -28,7 +28,7 @@
 
   - import_role:
       name: os-update
-      tasks_from: os_Ubuntu.yml
+      tasks_from: os_Debian.yml
     tags: 
     - prepare_cluster
     - os-update
