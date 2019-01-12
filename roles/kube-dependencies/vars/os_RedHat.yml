@@ -1,0 +1,12 @@
+---
+
+hosts_file_path: /etc/hosts
+required_packages:
+- vim
+- wget
+- git
+- telnet
+- net-tools
+selinux_temp_src_path: config.j2
+selinux_temp_dst_path: /etc/selinux/config
+fstab_path: /etc/fstab
