@@ -1,0 +1,36 @@
+---
+
+- name: determine the operating system
+  hosts: kubernetes-cluster
+  tasks:
+  
+  - name: classify hosts depending on their OS family with gathering some facts        
+    group_by:
+      key: os_{{ ansible_facts['os_family'] }}
+    tags: os-update
+
+- name: import os-update role for RedHat based hosts
+  hosts: os_RedHat
+  gather_facts: false
+  tasks:
+
+  - import_role:
+      name: os-update
+      tasks_from: os_RedHat.yml
+    tags: 
+    - prepare_cluster
+    - os-update
+
+- name: import os-update role for Debian based hosts
+  hosts: os_Debian
+  gather_facts: false
+  tasks:
+
+  - import_role:
+      name: os-update
+      tasks_from: os_Debian.yml
+    tags: 
+    - prepare_cluster
+    - os-update
+
+

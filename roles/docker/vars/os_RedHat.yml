@@ -1,0 +1,9 @@
+---
+
+required_packages:
+- yum-utils
+- device-mapper-persistent-data
+- lvm2
+docker_repo_url: https://download.docker.com/linux/centos/docker-ce.repo
+docker_repo_dst_path: /etc/yum.repos.d/docker-ce.repo
+systemd_docker_path: /usr/lib/systemd/system/docker.service

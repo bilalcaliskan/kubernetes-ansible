@@ -1,0 +1,74 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
+  tags:
+  - import
+  - os-update
+
+- name: update all packages on masters
+  yum: 
+    name: "*"
+    state: latest
+  when: 
+  - ansible_facts['os_family'] == "RedHat"
+  - "inventory_hostname in groups['masters']"
+  tags: os-update
+
+- name: update all packages on workers
+  yum:
+    name: "*"
+    state: latest
+  when: 
+  - ansible_facts['os_family'] == "RedHat"
+  - "inventory_hostname in groups['workers']"
+  tags: os-update
+
+- name: restart workers before finalizing update
+  shell: /sbin/shutdown -r +1
+  async: 0
+  pool: 0
+  ignore_errors: true
+  when: 
+  - "inventory_hostname in groups['workers']"
+  tags: os-update
+
+- name: wait for worker to restart
+  wait_for_connection:
+    delay: 30
+    timeout: 300
+  when: "inventory_hostname in groups['workers']"
+  tags: os-update
+ 
+- name: execute uptime command
+  shell: uptime
+  when: "inventory_hostname in groups['workers']"
+  tags: os-update
+
+- name: restart masters before finalizing update
+  shell: /sbin/shutdown -r +1
+  async: 0
+  pool: 0
+  ignore_errors: true
+  when: "inventory_hostname in groups['masters']"
+  tags: os-update
+
+- name: wait for master to restart
+  wait_for_connection:
+    delay: 30
+    timeout: 300
+  when: "inventory_hostname in groups['masters']"
+  tags: os-update
+ 
+- name: execute uptime command
+  shell: uptime
+  when: "inventory_hostname in groups['masters']"
+  register: uptime_result
+  tags: os-update
+
+- name: end of play debug message
+  debug:
+    msg: "all the plays completed for {{ inventory_hostname }}"
+  when: uptime_result is succeeded
+  tags: os-update
+

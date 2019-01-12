@@ -1,0 +1,88 @@
+---
+
+- name: import variables for RedHat based hosts
+  include_vars: "os_RedHat.yml"
+  tags:
+  - import
+  - kube-dependencies
+
+- name: Add IP address of all hosts to "{{ hosts_file_path }}" file
+  lineinfile:
+    dest: "{{ hosts_file_path }}" 
+    line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ hostvars[item].inventory_hostname }}"
+    state: present
+  with_items: "{{ groups['kubernetes-cluster'] }}"
+  tags: kube-dependencies
+  
+- name: ensure a list of packages installed
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ required_packages }}"
+  register: install_result
+  tags: kube-dependencies
+
+- name: disable selinux temporarily
+  selinux:
+    state: disabled
+  register: selinux_tmp_result
+  tags: kube-dependencies
+
+- name: disable selinux permanently
+  template:
+    src: "{{ selinux_tmp_src_path }}"
+    dest: "{{ selinux_tmp_dst_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  register: selinux_perm_result
+  when: selinux_tmp_result is succeeded
+  tags: kube-dependencies
+
+# enable br_netfilter kernel module to allow kubernetes pods to communicate across the cluster
+- name: enable br_netfilter
+  modprobe:
+    name: br_netfilter
+    state: present
+  tags: kube-dependencies
+
+- name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: 1
+    state: present
+  tags: kube-dependencies
+
+- name: ensure net.bridge.bridge-nf-call-iptables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+  tags: kube-dependencies
+
+- name: remove swapfile from "{{ fstab_path }}"
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+  register: remove_fstab_result
+  tags: kube-dependencies
+
+- name: disable swap
+  command: swapoff -a
+  register: disable_swap_result
+  when: 
+  - ansible_swaptotal_mb > 0
+  - remove_fstab_result is succeeded
+  tags: kube-dependencies
+
+- name: disable service firewalld and ensure it is masked
+  systemd:
+    name: firewalld
+    enabled: no
+    masked: yes
+  register: disable_firewalld_result
+  when: disable_swap_result is succeeded
+  tags: kube-dependencies
+
+

@@ -1,0 +1,68 @@
+---
+
+- name: Import variables
+  include_vars: "os_RedHat.yml"
+  tags:
+  - import
+  - docker
+
+- name: import handlers
+  include_tasks: "os_RedHat.yml"
+  tags:
+  - import
+  - docker
+
+- name: install or upgrade required packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ required_packages }}"
+  register: install_required_result
+  tags: docker
+
+- name: add docker-ce repo
+  get_url:
+    url: "{{ docker_repo_url }}"
+    dest: "{{ docker_repo_dst_path }}"
+  when: install_required_result is succeeded
+  register: add_docker_result
+  tags: docker
+
+- name: install or upgrade docker
+  yum:
+    name: docker-ce
+    state: latest
+  when: add_docker_result is succeeded
+  register: install_docker_result
+  tags: docker
+
+- name: start docker service
+  service: 
+    name: docker
+    state: started
+    enabled: yes
+  when: install_docker_result is succeeded
+  register: start_docker_result
+  tags: docker
+
+- name: add user vagrant to docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+  register: add_user_result
+  when: start_docker_result is succeeded
+  tags: docker
+
+- name: change cgroup of docker daemon
+  template: 
+    src: docker.service.j2
+    dest: "{{ systemd_docker_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: start_docker_result is succeeded
+  register: change_cgroup_result
+  notify: reload and restart docker
+  tags: docker
+

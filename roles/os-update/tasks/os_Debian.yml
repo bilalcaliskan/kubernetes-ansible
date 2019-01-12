@@ -1,0 +1,36 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
+  tags:
+  - import
+  - os-update
+
+- name: import handlers
+  include_tasks: "os_Debian.yml"
+  tags:
+  - import
+  - docker
+
+- name: update repository cache and upgrade all packages with full-upgrade option
+  apt:
+    update_cache: yes
+    upgrade: full
+  tags: os-update
+
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items: "{{ required_packages }}"
+  tags: os-update
+
+- name: remove useless packages from the cache
+  apt:
+    autoclean: yes
+  tags: os-update
+
+- name: remove packages that are no longer required and automatically installed
+  apt:
+    autoremove: yes
+  tags: os-update
