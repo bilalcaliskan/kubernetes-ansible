@@ -6,6 +6,12 @@
   - import
   - os-update
 
+- name: import handlers
+  include_tasks: "os_RedHat.yml"
+  tags:
+  - import
+  - docker
+
 - name: update all packages on masters
   yum: 
     name: "*"
