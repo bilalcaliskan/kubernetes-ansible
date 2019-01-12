@@ -11,8 +11,8 @@ then
 	elif [[ -n "$(which apt)" && ! -n "$(sudo which easy_install)" ]]
 	then
 		echo "package manager of OS is apt and easy_install is not installed, installing..."
-		sudo apt-get update
-		sudo apt-get install python-setuptools
+		sudo apt update
+		sudo apt install python-setuptools
 	fi
 
 	sudo easy_install pip
