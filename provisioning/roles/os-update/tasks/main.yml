@@ -1,0 +1,18 @@
+---
+
+- import_role:
+    name: os-update
+    tasks_from: os_RedHat.yml
+  when: ansible_facts['os_family'] == "RedHat"
+  tags: 
+  - prepare_cluster
+  - os-update
+
+- import_role:
+    name: os-update
+    tasks_from: os_Debian.yml
+  when: ansible_facts['os_family'] == "Debian"
+  tags: 
+  - prepare_cluster
+  - os-update
+
