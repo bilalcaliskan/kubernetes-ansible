@@ -1,0 +1,11 @@
+---
+
+- name: import os_update playbook
+  import_playbook: os_update.yml
+
+- name: import prepare_cluster playbook
+  import_playbook: prepare_cluster.yml
+
+- name: import prepare_docker playbook
+  import_playbook: prepare_docker.yml
+

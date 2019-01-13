@@ -11,10 +11,11 @@
 
 - name: import preparation role for RedHat based hosts
   hosts: os_RedHat
+  serial: "1"
   gather_facts: false
   tasks:
 
-  - import_role:
+  - include_role:
       name: preparation
       tasks_from: os_RedHat.yml
     tags: 
@@ -23,10 +24,11 @@
 
 - name: import preparation role for Debian based hosts
   hosts: os_Debian
+  serial: "1"
   gather_facts: false
   tasks:
 
-  - import_role:
+  - include_role:
       name: preparation
       tasks_from: os_Debian.yml
     tags: 

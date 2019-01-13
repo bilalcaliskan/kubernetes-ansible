@@ -2,13 +2,13 @@
 
 - include_tasks: os_RedHat.yml
   when: ansible_facts['os_family'] == "RedHat"
-  tags:
-  - prepare_cluster
-  - os-update
+  tags: 
+  - install_docker
+  - docker
 
 - include_tasks: os_Debian.yml
   when: ansible_facts['os_family'] == "Debian"
-  tags:
-  - prepare_cluster
-  - os-update
+  tags: 
+  - install_docker
+  - docker
 

@@ -4,11 +4,11 @@
   when: ansible_facts['os_family'] == "RedHat"
   tags:
   - prepare_cluster
-  - os-update
+  - preparation
 
 - include_tasks: os_Debian.yml
   when: ansible_facts['os_family'] == "Debian"
   tags:
   - prepare_cluster
-  - os-update
+  - preparation
 

@@ -44,9 +44,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.config_file = "provisioning/ansible.cfg"
     ansible.inventory_path = "provisioning/hosts.ini"
-    ansible.playbook = "provisioning/playbooks/os_update.yml"
-    ansible.playbook = "provisioning/playbooks/prepare_cluster.yml"
-    ansible.playbook = "provisioning/playbooks/install_docker.yml"
+    ansible.playbook = "provisioning/playbooks/run_all.yml"
   end
 end
 

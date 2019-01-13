@@ -1,17 +1,10 @@
 ---
 
-- name: import variables
-  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
-  tags:
-  - import
-  - os-update
-
 - name: update all packages on all nodes
   yum:
     name: "*"
     state: latest
-  when: 
-  - ansible_facts['os_family'] == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
   register: update_result
   tags: os-update
 
@@ -22,7 +15,7 @@
     msg: Rebooting "{{ inventory_hostname }}" 
     test_command: uptime
   when: 
-  - update_result.changed == false
+  - update_result.changed == true
   - ansible_facts['os_family'] == "RedHat"
   register: reboot_result
   tags: os-update
@@ -30,6 +23,6 @@
 - name: end of play debug message
   debug:
     msg: "all the plays completed for {{ inventory_hostname }}"
-  when: reboot_result is succeeded
+  when: update_result is succeeded
   tags: os-update
 

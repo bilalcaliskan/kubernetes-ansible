@@ -2,7 +2,6 @@
 
 - hosts: kubernetes-cluster
   # work on 1 host at a time
-  serial: 1
-  roles:
+  serial: "1"
+  roles: 
   - preparation
-

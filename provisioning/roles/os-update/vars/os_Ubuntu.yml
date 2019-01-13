@@ -1,6 +1,0 @@
----
-
-required_packages:
-- git
-- wget
-- apt-transport-https

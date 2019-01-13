@@ -1,7 +1,7 @@
 ---
 
 - name: Import variables
-  include_vars: "os_RedHat.yml"
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
   tags:
   - import
   - docker
@@ -10,7 +10,6 @@
   yum:
     name: "{{ required_packages }}"
     state: latest
-  #loop: "{{ required_packages }}"
   register: install_required_result
   tags: docker
 
@@ -18,7 +17,6 @@
   get_url:
     url: "{{ docker_repo_url }}"
     dest: "{{ docker_repo_dst_path }}"
-  when: install_required_result is succeeded
   register: add_docker_result
   tags: docker
 
@@ -26,11 +24,10 @@
   yum:
     name: docker-ce
     state: latest
-  when: add_docker_result is succeeded
   register: install_docker_result
   tags: docker
 
-- name: start docker service
+- name: start and enable docker service
   service: 
     name: docker
     state: started

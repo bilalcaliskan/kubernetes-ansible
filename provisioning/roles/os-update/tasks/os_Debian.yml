@@ -1,17 +1,5 @@
 ---
 
-- name: import variables
-  include_vars: "os_{{ ansible_facts['distribution'] }}.yml"
-  tags:
-  - import
-  - os-update
-
-- name: import handlers
-  include_tasks: "os_Debian.yml"
-  tags:
-  - import
-  - docker
-
 - name: update repository cache and upgrade all packages with full-upgrade option
   apt:
     update_cache: yes

@@ -1,15 +1,15 @@
 ---
 
 - name: import variables for RedHat based hosts
-  include_vars: "os_RedHat.yml"
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
   tags:
   - import
-  - kube-dependencies
+  - preparation
 
 - name: Add IP address of all hosts to "{{ hosts_file_path }}" file
   lineinfile:
     dest: "{{ hosts_file_path }}" 
-    line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ hostvars[item].inventory_hostname }}"
+    line: "{{ ansible_eth1.ipv4.address }} {{ inventory_hostname }}"
     state: present
   with_items: "{{ groups['kubernetes-cluster'] }}"
   tags: kube-dependencies
@@ -20,45 +20,51 @@
     state: present
   #loop: "{{ required_packages }}"
   register: install_result
-  tags: kube-dependencies
+  tags: preparation
 
 - name: disable selinux temporarily
   selinux:
     state: disabled
   register: selinux_tmp_result
-  tags: kube-dependencies
+  tags: preparation
 
 - name: disable selinux permanently
   template:
-    src: "{{ selinux_tmp_src_path }}"
-    dest: "{{ selinux_tmp_dst_path }}"
+    src: "{{ selinux_temp_src_path }}"
+    dest: "{{ selinux_temp_dst_path }}"
     owner: root
     group: root
     mode: 0644
   register: selinux_perm_result
   when: selinux_tmp_result is succeeded
-  tags: kube-dependencies
+  tags: preparation
 
 # enable br_netfilter kernel module to allow kubernetes pods to communicate across the cluster
 - name: enable br_netfilter
   modprobe:
     name: br_netfilter
     state: present
-  tags: kube-dependencies
+  tags: preparation
 
 - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
   sysctl:
     name: net.bridge.bridge-nf-call-ip6tables
     value: 1
     state: present
-  tags: kube-dependencies
+  tags: preparation
 
 - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
     value: 1
     state: present
-  tags: kube-dependencies
+  tags: preparation
+
+- name: check if "{{ fstab_path }}" exists
+  stat:
+    path: "{{ fstab_path }}" 
+  register: stat_result
+  tags: preparation
 
 - name: remove swapfile from "{{ fstab_path }}"
   mount:
@@ -66,7 +72,8 @@
     fstype: swap
     state: absent
   register: remove_fstab_result
-  tags: kube-dependencies
+  when: stat_result.stat.exists == true
+  tags: preparation
 
 - name: disable swap
   command: swapoff -a
@@ -74,7 +81,7 @@
   when: 
   - ansible_swaptotal_mb > 0
   - remove_fstab_result is succeeded
-  tags: kube-dependencies
+  tags: preparation
 
 - name: disable service firewalld and ensure it is masked
   systemd:
@@ -83,6 +90,6 @@
     masked: yes
   register: disable_firewalld_result
   when: disable_swap_result is succeeded
-  tags: kube-dependencies
+  tags: preparation
 
 

@@ -8,4 +8,3 @@
   import_tasks: os_RedHat_post_install.yml
   tags: docker
 
-

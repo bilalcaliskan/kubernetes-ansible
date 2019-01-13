@@ -12,6 +12,7 @@
 - name: import os-update role for RedHat based hosts
   hosts: os_RedHat
   gather_facts: false
+  serial: 1
   tasks:
 
   - import_role:
@@ -24,6 +25,7 @@
 - name: import os-update role for Debian based hosts
   hosts: os_Debian
   gather_facts: false
+  serial: 1
   tasks:
 
   - import_role:
