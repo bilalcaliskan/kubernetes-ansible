@@ -6,11 +6,11 @@
   - import
   - docker
 
-- name: install or upgrade required packages
+- name: install or upgrade required packages with optimal way
   yum:
-    name: "{{ item }}"
+    name: "{{ required_packages }}"
     state: latest
-  loop: "{{ required_packages }}"
+  #loop: "{{ required_packages }}"
   register: install_required_result
   tags: docker
 

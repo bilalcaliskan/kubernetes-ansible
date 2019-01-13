@@ -14,11 +14,11 @@
   with_items: "{{ groups['kubernetes-cluster'] }}"
   tags: kube-dependencies
   
-- name: ensure a list of packages installed
+- name: ensure a list of packages installed with optimal way(can be used on apt and yum modules)
   yum:
-    name: "{{ item }}"
+    name: "{{ required_packages }}"
     state: present
-  loop: "{{ required_packages }}"
+  #loop: "{{ required_packages }}"
   register: install_result
   tags: kube-dependencies
 
