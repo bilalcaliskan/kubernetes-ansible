@@ -20,7 +20,7 @@ then
 else
 	echo "ansible is already installed, upgrading if newer version is available..."
 	sudo pip install --upgrade ansible
-	if [[ $? == 0 ]]; then echo "successfully upgraded ansible with latest version" && exit 0; else echo "an error occured while upgrading ansible" && exit 255; fi
+	exit 0
 fi
 
 
