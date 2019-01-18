@@ -1,3 +1,10 @@
 ---
 
-
+k8s_base_url: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+k8s_yum_key: https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+k8s_rpm_key: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+k8s_version: 1.11.3
+k8s_packages:
+- kubelet
+- kubectl
+- kubeadm

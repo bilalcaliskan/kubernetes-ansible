@@ -1,3 +1,31 @@
 ---
 
+- name: import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - kubernetes
+
+- name: start of task debug message
+  debug:
+    msg: "kubernetes role is starting for {{ inventory_hostname }}"
+  tags: kubernetes
+
+- name: add Kubernetes' yum repository
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes YUM repository
+    baseurl: "{{ k8s_base_url }}"
+    gpgkey: "{{ k8s_yum_key }} {{ k8s_rpm_key }}"
+    gpgcheck: yes
+  tags: kubernetes
+
+- name: install k8s packages
+  yum:
+    name: "{{ item }}-{{ k8s_version }}"
+    state: present
+  loop: "{{ k8s_packages }}"
+  notify: start and enable docker and kubelet
+  tags: kubernetes
+
 

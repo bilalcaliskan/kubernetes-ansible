@@ -1,2 +1,13 @@
 ---
 
+- name: start and enable docker and kubelet
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+  - docker
+  - kubelet
+  tags: kubernetes
+
+
