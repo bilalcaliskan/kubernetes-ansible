@@ -44,6 +44,7 @@
   notify: start and enable docker and kubelet
   tags: kubernetes
 
+
 - name: initialize the cluster
   command: "kubeadm init --apiserver-advertise-address={{ k8s_master_ip }} --pod-network-cidr={{ k8s_pod_subnet }} --ignore-preflight-errors=SystemVerification >> {{ output_file }}"
   when: "inventory_hostname in groups['masters'][0]"
@@ -66,7 +67,7 @@
     dest: "{{ k8s_dst_conf_path }}"
     remote_src: yes
     owner: root
-  when: "inventory_hostname in groups['masters'][0]"
+  when: "inventory_hostname in groups['masters']"
   tags: kubernetes
 
 - name: pause for 10 seconds
@@ -80,7 +81,7 @@
   args:
     chdir: $HOME
     creates: pod_network_setup.txt
-  when: "inventory_hostname in groups['masters']"
+  when: "inventory_hostname in groups['masters'][0]"
   register: init_pod_network_result
   tags: kubernetes
 

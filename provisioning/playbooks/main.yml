@@ -9,3 +9,5 @@
 - name: import prepare_docker playbook
   import_playbook: prepare_docker.yml
 
+- name: import prepare_kubernetes playbook
+  import_playbook: prepare_kubernetes.yml
