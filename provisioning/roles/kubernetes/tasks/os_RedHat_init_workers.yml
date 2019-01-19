@@ -1,0 +1,17 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - kubernetes
+
+- name: join cluster
+  shell: "{{ hostvars[item].join_command }} --ignore-preflight-errors=SystemVerification >> node_joined.txt"
+  args:
+    chdir: $HOME
+    creates: node_joined.txt
+  with_items:
+  - kubemaster01
+  tags: kubernetes
+

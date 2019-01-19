@@ -1,0 +1,54 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - kubernetes
+
+- name: initialize the cluster
+  command: "kubeadm init --apiserver-advertise-address={{ k8s_master_ip }} --pod-network-cidr={{ k8s_pod_subnet }} --ignore-preflight-errors=SystemVerification >> {{ output_file }}"
+  register: init_result
+  tags: kubernetes
+
+- name: create .kube directory
+  file:
+    path: $HOME/.kube
+    state: directory
+    mode: 0755
+  when: init_result is succeeded
+  tags: kubernetes
+
+- name: copy admin.conf to user's kube config
+  copy:
+    src: "{{ k8s_src_conf_path }}"
+    dest: "{{ k8s_dst_conf_path }}"
+    remote_src: yes
+    owner: root
+  tags: kubernetes
+
+- name: pause for 10 seconds
+  pause:
+    prompt: Pausing 10 seconds before initializing pod network...
+    seconds: 10
+  tags: kubernetes
+
+- name: install pod network
+  shell: "kubectl apply -f {{ flannel_url }} >> pod_network_setup.txt"
+  args:
+    chdir: $HOME
+    creates: pod_network_setup.txt
+  register: init_pod_network_result
+  tags: kubernetes
+
+- name: get join command
+  shell: kubeadm token create --print-join-command
+  register: join_command_result
+  tags: kubernetes
+
+- name: set join command
+  set_fact:
+    join_command: "{{ join_command_result.stdout_lines[0] }}"
+  tags: kubernetes
+
+
