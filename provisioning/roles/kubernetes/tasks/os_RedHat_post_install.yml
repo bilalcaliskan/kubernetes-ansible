@@ -1,8 +1,14 @@
 ---
 
+- name: import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - kubernetes
+
 - name: move namespaces templates to tmp dir
   template:
-    src: {{ item }}.yaml.j2
+    src: "{{ item }}.yaml.j2"
     dest: /tmp/{{ item }}.yaml
     owner: root
     group: root
@@ -13,8 +19,9 @@
   tags: kubernetes
 
 - name: create namespaces
-  command: kubectl create -f /tmp/{{ item }}.yaml
+  command: "kubectl create -f /tmp/{{ item }}.yaml"
   loop:
   - dev-ns
   - test-ns
   tags: kubernetes
+

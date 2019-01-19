@@ -15,3 +15,4 @@ k8s_src_conf_path: /etc/kubernetes/admin.conf
 k8s_dst_conf_path: /root/.kube/config
 flannel_url: https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
 fstab_path: /etc/fstab
+helm_version: v2.12.2
