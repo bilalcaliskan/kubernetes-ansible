@@ -66,30 +66,23 @@
   register: stat_result
   tags: preparation
 
-- name: remove swapfile from "{{ fstab_path }}"
-  mount:
-    name: swap
-    fstype: swap
+- name: swap - remove current swaps from fstab
+  lineinfile:
+    dest: "{{ fstab_path }}"
+    regexp: '^/[\S]+\s+none\s+swap '
     state: absent
-  register: remove_fstab_result
   when: stat_result.stat.exists == true
-  tags: preparation
+  tags: kubernetes
 
-- name: disable swap
-  command: swapoff -a
-  register: disable_swap_result
-  when: 
-  - ansible_swaptotal_mb > 0
-  - remove_fstab_result is succeeded
-  tags: preparation
+- name: swap - disable swap
+  command: swapoff --all
+  ignore_errors: yes
+  tags: kubernetes
 
 - name: disable service firewalld and ensure it is masked
   systemd:
     name: firewalld
     enabled: no
     masked: yes
-  register: disable_firewalld_result
-  when: disable_swap_result is succeeded
   tags: preparation
-
 

@@ -11,22 +11,6 @@
     msg: "kubernetes role is starting for {{ inventory_hostname }}"
   tags: kubernetes
 
-- name: remove swapfile
-  mount:
-    name: swap
-    fstype: swap
-    state: absent
-  register: remove_fstab_result
-  tags: preparation
-
-- name: disable swap
-  command: swapoff -a
-  register: disable_swap_result
-  when: 
-  - ansible_swaptotal_mb > 0
-  - remove_fstab_result is succeeded
-  tags: preparation
-
 - name: add Kubernetes' yum repository
   yum_repository:
     name: kubernetes
