@@ -1,0 +1,20 @@
+---
+
+- name: move namespaces templates to tmp dir
+  template:
+    src: {{ item }}.yaml.j2
+    dest: /tmp/{{ item }}.yaml
+    owner: root
+    group: root
+    mode: 0744
+  loop:
+  - dev-ns
+  - test-ns
+  tags: kubernetes
+
+- name: create namespaces
+  command: kubectl create -f /tmp/{{ item }}.yaml
+  loop:
+  - dev-ns
+  - test-ns
+  tags: kubernetes
