@@ -7,27 +7,27 @@
   - name: classify hosts depending on their OS family with gathering some facts        
     group_by:
       key: os_{{ ansible_facts['os_family'] }}
-    tags: docker
+    tags: kubernetes
 
 - name: import kubernetes role for RedHat based hosts
   hosts: os_RedHat
   serial: "1"
-  gather_facts: false
+  gather_facts: true
   tasks:
 
   - include_role:
       name: kubernetes
       tasks_from: os_RedHat.yml
-    tags: docker
+    tags: kubernetes
 
 - name: import kubernetes role for Debian based hosts
   hosts: os_Debian
   serial: "1"
-  gather_facts: false
+  gather_facts: true
   tasks:
 
   - include_role:
       name: kubernetes
       tasks_from: os_Debian.yml
-    tags: docker
+    tags: kubernetes
 
