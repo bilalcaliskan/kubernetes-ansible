@@ -11,7 +11,7 @@
 
 - name: import kubernetes role for RedHat based hosts
   hosts: os_RedHat
-  serial: "1"
+  serial: "100%"
   gather_facts: true
   tasks:
 
@@ -22,7 +22,7 @@
 
 - name: import kubernetes role for Debian based hosts
   hosts: os_Debian
-  serial: "1"
+  serial: "100%"
   gather_facts: true
   tasks:
 

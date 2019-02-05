@@ -40,6 +40,6 @@
 
 - name: include tasks to post installation process
   include_tasks: os_RedHat_post_install.yml
-  when: "inventory_hostname in groups['workers']"
+  when: "inventory_hostname in groups['masters']"
   tags: kubernetes
 
