@@ -1,50 +1,46 @@
 Vagrant.require_version ">= 1.6.0"
 
-boxes = [
-    {
-        :name => "kubemaster01",
-        :eth1 => "172.28.128.3",
-        :mem => "1500",
-        :cpu => "1"
-    },
-    {
-        :name => "kubenode01",
-        :eth1 => "172.28.128.4",
-        :mem => "1024",
-        :cpu => "1"
-    },
-    {
-        :name => "kubenode02",
-        :eth1 => "172.28.128.5",
-        :mem => "1024",
-        :cpu => "1"
-    }
-]
+# number of worker nodes to loop
+N = 2
 
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "centos/7"
-  #config.vm.box = "ubuntu/trusty64"
-  config.ssh.insert_key = false
-  boxes.each do |opts|
-    config.vm.define opts[:name] do |config|
-      config.vm.hostname = opts[:name]
-      config.vm.provider "vmware_fusion" do |v|
-        v.vmx["memsize"] = opts[:mem]
-        v.vmx["numvcpus"] = opts[:cpu]
-      end
-      config.ssh.forward_agent = true
-      config.vm.provider "virtualbox" do |v|
-        v.customize ["modifyvm", :id, "--memory", opts[:mem]]
-        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
-      end
-      config.vm.network :private_network, ip: opts[:eth1]
+  # create master node first
+  config.vm.define "kubemaster01" do |machine|
+    machine.vm.box = "centos/7"
+    # machine.vm.box = "ubuntu/trusty64"
+    machine.ssh.insert_key = false
+    machine.vm.hostname = "kubemaster01"
+    machine.vm.network "private_network", ip: "172.28.128.3"
+    machine.ssh.forward_agent = true
+    machine.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--memory", "1024"]
+      v.customize ["modifyvm", :id, "--cpus", "1"]
     end
   end
-  config.vm.provision "ansible" do |ansible|
-    ansible.config_file = "provisioning/ansible.cfg"
-    ansible.inventory_path = "provisioning/hosts.ini"
-    ansible.playbook = "provisioning/playbooks/main.yml"
+
+  # create worker nodes and start provisioning after creating last worker node
+  (1..N).each do |machine_id|
+    config.vm.define "kubenode0#{machine_id}" do |machine|
+      machine.vm.box = "centos/7"
+      # machine.vm.box = "ubuntu/trusty64"
+      machine.ssh.insert_key = false
+      machine.vm.hostname = "kubenode0#{machine_id}"
+      machine.vm.network "private_network", ip: "172.28.128.#{3+machine_id}"
+      machine.ssh.forward_agent = true
+      machine.vm.provider "virtualbox" do |v|
+        v.customize ["modifyvm", :id, "--memory", "1024"]
+        v.customize ["modifyvm", :id, "--cpus", "1"]
+      end
+      if machine_id == N
+        machine.vm.provision :ansible do |ansible|
+          # Disable default limit to connect to all the machines
+          ansible.limit = "all"
+          ansible.config_file = "provisioning/ansible.cfg"
+          ansible.inventory_path = "provisioning/hosts.ini"
+          ansible.playbook = "provisioning/playbooks/main.yml"
+        end
+      end
+    end
   end
 end
-
