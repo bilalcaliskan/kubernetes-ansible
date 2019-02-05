@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
     machine.vm.network "private_network", ip: "172.28.128.3"
     machine.ssh.forward_agent = true
     machine.vm.provider "virtualbox" do |v|
-      v.customize ["modifyvm", :id, "--memory", "1024"]
+      v.customize ["modifyvm", :id, "--memory", "1500"]
       v.customize ["modifyvm", :id, "--cpus", "1"]
     end
   end
