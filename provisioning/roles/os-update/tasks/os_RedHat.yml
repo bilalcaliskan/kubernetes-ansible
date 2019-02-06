@@ -1,5 +1,11 @@
 ---
 
+- name: import variables for RedHat based hosts
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - preparation
+
 - name: update all packages on all nodes
   yum:
     name: "*"

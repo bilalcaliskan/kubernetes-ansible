@@ -1,0 +1,41 @@
+---
+
+- name: import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - kubernetes
+
+- name: update all packages on all nodes
+  yum:
+    name: "*"
+    state: latest
+    exclude: kube*
+  when: ansible_facts['os_family'] == "RedHat"
+  register: update_result
+  tags: kubernetes
+
+- name: upgrade kubeadm on masters
+  yum:
+    name: "kubeadm-{{ upgrade_version }}"
+    state: present
+  register: upgrade_kubeadm_result
+  when: "inventory_hostname in groups['masters']"
+  tags: kubernetes
+
+- name: upgrade master nodes with kubeadm
+  command: kubeadm upgrade apply "{{ kubeadm_apply_input }}"
+  register: upgrade_master_result
+  tags: kubernetes
+
+- name: drain first worker node on the first master node
+  command: kubectl drain "{{ item }}" --ignore-daemonsets
+  when: 
+  - "inventory_hostname in groups['masters'][0]"
+  - upgrade_master_result is succeeded
+  with_items:
+  - kubenode01
+  register: drain_node01_result
+  tags: kubernetes
+
+
