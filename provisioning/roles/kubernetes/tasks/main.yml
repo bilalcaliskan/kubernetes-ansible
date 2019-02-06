@@ -1,12 +1,12 @@
 ---
 
-- include_tasks: os_RedHat.yml
+- include_tasks: os_RedHat_install_k8s.yml
   when: ansible_facts['os_family'] == "RedHat"
   tags: 
   - install_kubernetes
   - kubernetes
 
-- include_tasks: os_Debian.yml
+- include_tasks: os_Debian_install_k8s.yml
   when: ansible_facts['os_family'] == "Debian"
   tags: 
   - install_kubernetes

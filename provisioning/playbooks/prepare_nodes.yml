@@ -21,7 +21,7 @@
       name: preparation
       tasks_from: os_RedHat.yml
     tags: 
-    - prepare_cluster
+    - prepare_nodes
     - preparation
 
 - name: import preparation role for Debian based hosts
@@ -36,7 +36,7 @@
       name: preparation
       tasks_from: os_Debian.yml
     tags: 
-    - prepare_cluster
+    - prepare_nodes
     - preparation
 
 

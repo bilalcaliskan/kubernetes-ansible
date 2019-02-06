@@ -38,8 +38,8 @@
   when: "inventory_hostname in groups['workers']"
   tags: kubernetes
 
-- name: include tasks to post installation process
-  include_tasks: os_RedHat_post_install.yml
+- name: include tasks to initialize k8s API objects
+  include_tasks: init_objects.yml
   when: "inventory_hostname in groups['masters']"
   tags: kubernetes
 
