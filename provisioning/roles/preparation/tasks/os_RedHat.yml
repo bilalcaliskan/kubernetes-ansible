@@ -9,9 +9,9 @@
 - name: add IP address of all hosts to "{{ hosts_file_path }}" file
   lineinfile:
     dest: "{{ hosts_file_path }}" 
-    line: "{{ ansible_eth1.ipv4.address }} {{ inventory_hostname }}"
+    line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ item }}"
     state: present
-  with_items: "{{ groups['kubernetes-cluster'] }}"
+  loop: "{{ groups['kubernetes-cluster'] }}"
   tags: kube-dependencies
   
 - name: ensure a list of packages installed with optimal way(can be used on apt and yum modules)
