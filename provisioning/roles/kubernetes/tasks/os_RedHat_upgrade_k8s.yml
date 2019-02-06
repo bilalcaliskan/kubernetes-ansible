@@ -25,6 +25,7 @@
 
 - name: upgrade master nodes with kubeadm
   command: kubeadm upgrade apply "{{ kubeadm_apply_input }}"
+  when: "inventory_hostname in groups['masters']"
   register: upgrade_master_result
   tags: kubernetes
 
