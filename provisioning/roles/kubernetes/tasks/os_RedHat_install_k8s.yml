@@ -22,7 +22,7 @@
 
 - name: install k8s packages
   yum:
-    name: "{{ item }}-{{ k8s_version }}"
+    name: "{{ item }}"
     state: present
   loop: "{{ k8s_packages }}"
   notify: start and enable docker and kubelet

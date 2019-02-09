@@ -3,7 +3,6 @@
 k8s_base_url: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 k8s_yum_key: https://packages.cloud.google.com/yum/doc/yum-key.gpg 
 k8s_rpm_key: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-k8s_version: 1.11.3
 k8s_packages:
 - kubelet
 - kubectl
@@ -17,5 +16,3 @@ flannel_url: https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentat
 fstab_path: /etc/fstab
 helm_version: v2.12.2
 
-upgrade_version: 1.12.5-0
-kubeadm_apply_input: v1.12.5
