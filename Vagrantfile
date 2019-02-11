@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
     machine.ssh.forward_agent = true
     machine.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--memory", "1500"]
-      v.customize ["modifyvm", :id, "--cpus", "1"]
+      v.customize ["modifyvm", :id, "--cpus", "2"]
     end
   end
 

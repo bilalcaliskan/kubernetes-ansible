@@ -12,7 +12,7 @@ k8s_pod_subnet: 10.244.0.0/16
 output_file: /root/cluster_initialized.txt
 k8s_src_conf_path: /etc/kubernetes/admin.conf
 k8s_dst_conf_path: /root/.kube/config
-flannel_url: https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+flannel_url: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 fstab_path: /etc/fstab
 helm_version: v2.12.2
 
