@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     # machine.vm.box = "ubuntu/trusty64"
     machine.ssh.insert_key = false
     machine.vm.hostname = "kubemaster01"
-    machine.vm.network "private_network", ip: "172.28.128.3"
+    machine.vm.network "private_network", ip: "10.0.15.10"
     machine.ssh.forward_agent = true
     machine.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--memory", "1500"]
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
       # machine.vm.box = "ubuntu/trusty64"
       machine.ssh.insert_key = false
       machine.vm.hostname = "kubenode0#{machine_id}"
-      machine.vm.network "private_network", ip: "172.28.128.#{3+machine_id}"
+      machine.vm.network "private_network", ip: "10.0.15.#{20+machine_id}"
       machine.ssh.forward_agent = true
       machine.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--memory", "1024"]
