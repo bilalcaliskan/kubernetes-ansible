@@ -1,7 +1,13 @@
 ---
 
-- include: "inventory/os_update.yml"
+- name: import os_update playbook
+  import_playbook: update_os.yml
 
-- include: "inventory/preparation.yml"
+- name: import prepare_cluster playbook
+  import_playbook: prepare_nodes.yml
 
-- include: "inventory/docker.yml"
+- name: import init_docker playbook
+  import_playbook: init_docker.yml
+
+- name: import init_kubernetes playbook
+  import_playbook: init_kubernetes.yml

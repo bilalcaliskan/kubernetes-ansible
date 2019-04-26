@@ -1,38 +1,12 @@
 ---
 
-- name: determine the operating system
+- name: include kubernetes role
   hosts: kubernetes-cluster
-  tasks:
-  
-  - name: classify hosts depending on their OS family with gathering some facts        
-    group_by:
-      key: os_{{ ansible_facts['os_family'] }}
-    tags: 
-    - kubernetes
-    - init_kubernetes
-
-- name: import kubernetes role for RedHat based hosts
-  hosts: os_RedHat
   serial: "100%"
-  gather_facts: true
   tasks:
-
   - include_role:
       name: kubernetes
-      tasks_from: os_RedHat_install_k8s.yml
-    tags: 
-    - kubernetes
-    - init_kubernetes
-
-- name: import kubernetes role for Debian based hosts
-  hosts: os_Debian
-  serial: "100%"
-  gather_facts: true
-  tasks:
-
-  - include_role:
-      name: kubernetes
-      tasks_from: os_Debian_install_k8s.yml
-    tags: 
+      tasks_from: main.yml
+    tags:
     - kubernetes
     - init_kubernetes

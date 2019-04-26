@@ -1,42 +1,12 @@
 ---
 
-- name: determine the operating system
+- name: import preparation role
   hosts: kubernetes-cluster
-  tasks:
-  
-  - name: classify hosts depending on their OS family with gathering some facts        
-    group_by:
-      key: os_{{ ansible_facts['os_family'] }}
-    tags: os-update
-
-- name: import preparation role for RedHat based hosts
-  hosts: os_RedHat
-  # use serial=1 for high availability
-  # serial: "1"
   serial: "100%"
-  gather_facts: false
   tasks:
-
   - include_role:
       name: preparation
-      tasks_from: os_RedHat.yml
-    tags: 
+      tasks_from: main.yml
+    tags:
     - prepare_nodes
     - preparation
-
-- name: import preparation role for Debian based hosts
-  hosts: os_Debian
-  # use serial=1 for high availability
-  # serial: "1"
-  serial: "100%"
-  gather_facts: false
-  tasks:
-
-  - include_role:
-      name: preparation
-      tasks_from: os_Debian.yml
-    tags: 
-    - prepare_nodes
-    - preparation
-
-
