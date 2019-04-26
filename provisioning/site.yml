@@ -1,13 +1,16 @@
 ---
 
-- name: import os_update playbook
-  import_playbook: update_os.yml
+#- name: import os_update playbook
+#  import_playbook: update_os.yml
 
-- name: import prepare_cluster playbook
-  import_playbook: prepare_nodes.yml
+#- name: import prepare_cluster playbook
+#  import_playbook: prepare_nodes.yml
 
-- name: import init_docker playbook
-  import_playbook: init_docker.yml
+#- name: import init_docker playbook
+#  import_playbook: init_docker.yml
 
-- name: import init_kubernetes playbook
-  import_playbook: init_kubernetes.yml
+#- name: import init_kubernetes playbook
+#  import_playbook: init_kubernetes.yml
+
+- name: import debug_facts playbook
+  import_playbook: debug_facts.yml

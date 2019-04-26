@@ -1,0 +1,41 @@
+---
+
+- name: Fact dump
+  hosts: all
+  tasks:
+  - name: Print all facts
+    debug:
+      var: ansible_facts
+
+  - name: print version of the currently running kernel
+    debug:
+      var: ansible_facts['kernel']
+
+  - name: print debug message with some facts
+    debug:
+      msg: >
+        The default IPv4 address of {{ ansible_facts.fqdn }} 
+        is {{ ansible_facts.default_ipv4.address }}
+
+# doing it just on master node to try
+- name: install custom facts to the remote location
+  hosts: "{{ groups['masters'][0] }}"
+  tasks:
+  - name: create the remote directory
+    file:
+      state: directory
+      recurse: yes
+      path: "{{ remote_dir }}"
+
+  - name: install the new custom facts
+    copy:
+      src: "{{ facts_file }}"
+      dest: "{{ remote_dir }}"
+
+  - name: print custom facts after gathering
+    debug:
+      msg: >
+        Required package is "{{ ansible_facts.ansible_local.custom.general.package }}"
+        Required service name is "{{ ansible_facts.ansible_local.custom.general.service }}"
+        Required service status is "{{ ansible_facts.ansible_local.custom.general.state }}"
+
