@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
           # Disable default limit to connect to all the machines
           ansible.limit = "all"
           ansible.config_file = "provisioning/ansible.cfg"
-          ansible.inventory_path = "provisioning/hosts.ini"
+          ansible.inventory_path = "provisioning/inventory/hosts.ini"
           ansible.playbook = "provisioning/playbooks/main.yml"
         end
       end
