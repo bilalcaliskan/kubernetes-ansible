@@ -22,5 +22,3 @@ else
 	sudo pip install --upgrade ansible
 	exit 0
 fi
-
-
