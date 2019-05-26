@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
           ansible.limit = "all"
           ansible.config_file = "provisioning/ansible.cfg"
           ansible.inventory_path = "provisioning/inventory/hosts.ini"
-          ansible.playbook = "provisioning/playbooks/main.yml"
+          ansible.playbook = "provisioning/site.yml"
         end
       end
     end

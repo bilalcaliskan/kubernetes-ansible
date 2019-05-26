@@ -36,7 +36,10 @@
   tags: kubernetes
 
 - name: install pod network
-  shell: "kubectl apply -f {{ flannel_url }} >> pod_network_setup.txt"
+  shell: "kubectl apply -f {{ item }} >> pod_network_setup.txt"
+  loop: 
+  - "{{ calico_url }}"
+  - "{{ calico_rbac_url }}"
   args:
     chdir: $HOME
     creates: pod_network_setup.txt

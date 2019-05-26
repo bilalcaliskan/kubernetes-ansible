@@ -8,11 +8,12 @@ k8s_packages:
 - kubectl
 - kubeadm
 k8s_master_ip: 10.0.15.10
-k8s_pod_subnet: 10.244.0.0/16
+k8s_pod_subnet: 192.168.0.0/16
 output_file: /root/cluster_initialized.txt
 k8s_src_conf_path: /etc/kubernetes/admin.conf
 k8s_dst_conf_path: /root/.kube/config
-flannel_url: https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
+calico_rbac_url: https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+calico_url: https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
 fstab_path: /etc/fstab
 helm_version: v2.12.2
 
