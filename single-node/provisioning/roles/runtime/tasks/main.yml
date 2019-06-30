@@ -1,11 +1,9 @@
 ---
 
-- include_tasks: os_RedHat.yml
+- import_tasks: os_RedHat.yml
   when: ansible_facts['os_family'] == "RedHat"
-  tags:
-  - runtime
+  tags: runtime
 
-- include_tasks: os_Debian.yml
+- import_tasks: os_Debian.yml
   when: ansible_facts['os_family'] == "Debian"
-  tags:
-  - runtime
+  tags: runtime

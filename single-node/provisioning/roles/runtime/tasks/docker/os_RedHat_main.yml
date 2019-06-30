@@ -1,0 +1,9 @@
+---
+
+- name: Import install docker tasks
+  import_tasks: "os_RedHat_install_docker.yml"
+  tags: docker
+
+- name: Import post installation task
+  import_tasks: "os_RedHat_post_install_docker.yml"
+  tags: docker
