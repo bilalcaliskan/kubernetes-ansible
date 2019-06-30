@@ -1,0 +1,49 @@
+---
+
+- name: Start of tasks debug message
+  debug:
+    msg: "Starting crio main tasks for {{ inventory_hostname }}"
+
+- name: Include variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+
+- name: Add required kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ required_kernel_modules }}"
+
+- name: Setup required sysctl params
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_file: "{{ crio_sysctl_dest_path }}"
+    reload: yes
+  loop: "{{ required_sysctl_params }}"
+
+- name: Add repository
+  yum_repository:
+    name: crio
+    description: CRI-O Repo
+    baseurl: "{{ crio_repo_url }}"
+
+- name: install latest version of required packages for crio
+  yum:
+    name: "{{ item }}"
+    state: latest
+    disable_gpg_check: yes
+  loop: "{{ crio_required_packages }}"
+  register: install_crio_result
+
+- name: Start and enable crio service
+  service:
+    name: crio
+    state: started
+    enabled: yes
+  when: install_crio_result is succeeded
+  register: start_crio_result
+
+- name: End of tasks debug message
+  debug:
+    msg: "All crio main tasks completed successfully for {{ inventory_hostname }}"
+  when: start_crio_result is succeeded
