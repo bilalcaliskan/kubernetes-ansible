@@ -2,9 +2,10 @@
 
 - name: Main playbook execution
   hosts: kubernetes-cluster
+  gather_facts: true
   serial: "100%"
   roles:
     - os-update
-    #- preparation
-    #- docker
-    #- kubernetes
+    - preparation
+    - runtime
+    - kubernetes

@@ -1,0 +1,17 @@
+---
+
+- name: Include handler for RedHat based hosts
+  include: os_RedHat.yml
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Include handler for Debian based hosts
+  include: os_Debian.yml
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: reboot hosts
+  reboot:
+    reboot_timeout: 3600
+    post_reboot_delay: 10
+    msg: Rebooting "{{ inventory_hostname }}"
+    test_command: uptime
+  register: reboot_result

@@ -1,88 +1,95 @@
 ---
 
-- name: import variables for RedHat based hosts
-  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
-  tags:
-  - import
-  - preparation
+- name: Start of tasks debug message
+  debug:
+    msg: "Starting preparation role tasks for {{ inventory_hostname }}"
 
-- name: add IP address of all hosts to "{{ hosts_file_path }}" file
+- name: Include variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+
+- name: Add IP address of all hosts to "{{ hosts_file_path }}" file
   lineinfile:
-    dest: "{{ hosts_file_path }}" 
+    dest: "{{ hosts_file_path }}"
     line: "{{ hostvars[item]['ansible_eth1']['ipv4']['address'] }} {{ item }}"
     state: present
   loop: "{{ groups['kubernetes-cluster'] }}"
-  tags: kube-dependencies
-  
-- name: ensure a list of packages installed with optimal way(can be used on apt and yum modules)
+
+- name: Ensure a list of packages installed with optimal way(can be used on apt and yum modules)
   yum:
     name: "{{ required_packages }}"
     state: present
   #loop: "{{ required_packages }}"
   register: install_result
-  tags: preparation
 
-- name: disable selinux temporarily
+- name: Disable selinux temporarily
   selinux:
     state: disabled
   register: selinux_tmp_result
-  tags: preparation
 
-- name: disable selinux permanently
-  template:
-    src: "{{ selinux_temp_src_path }}"
-    dest: "{{ selinux_temp_dst_path }}"
+- name: Copy selinux config file to the remote location
+  copy:
+    src: "{{ selinux_config_src_path }}"
+    dest: "{{ selinux_config_dst_path }}"
     owner: root
     group: root
+    backup: yes
     mode: 0644
   register: selinux_perm_result
   when: selinux_tmp_result is succeeded
-  tags: preparation
 
 # enable br_netfilter kernel module to allow kubernetes pods to communicate across the cluster
-- name: enable br_netfilter
+- name: Enable br_netfilter
   modprobe:
     name: br_netfilter
     state: present
-  tags: preparation
 
-- name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+- name: Ensure net.bridge.bridge-nf-call-ip6tables is set to 1
   sysctl:
     name: net.bridge.bridge-nf-call-ip6tables
     value: 1
     state: present
-  tags: preparation
 
-- name: ensure net.bridge.bridge-nf-call-iptables is set to 1
+- name: Ensure net.bridge.bridge-nf-call-iptables is set to 1
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
     value: 1
     state: present
-  tags: preparation
 
-- name: check if "{{ fstab_path }}" exists
+- name: Check if "{{ fstab_path }}" exists
   stat:
-    path: "{{ fstab_path }}" 
+    path: "{{ fstab_path }}"
   register: stat_result
-  tags: preparation
 
-- name: remove current swaps from fstab
+- name: Remove current swaps from fstab
   lineinfile:
     dest: "{{ fstab_path }}"
     regexp: '^/[\S]+\s+none\s+swap '
     state: absent
   when: stat_result.stat.exists == true
-  tags: kubernetes
 
-- name: disable swap
+- name: Disable swap
   command: swapoff --all
   ignore_errors: yes
-  tags: kubernetes
 
-- name: disable service firewalld and ensure it is masked
+- name: Disable service firewalld and ensure it is masked
   systemd:
     name: firewalld
     enabled: no
     masked: yes
-  tags: preparation
 
+- name: Set timezone with preferred default zone value {{ timezone }}
+  file:
+    src: "{{ zone_file_src_path }}"
+    dest: "{{ zone_file_dest_path }}"
+    owner: root
+    group: root
+    state: link
+  register: set_timezone_result
+  # reboot the hosts in all cases
+  changed_when: true
+  notify: reboot hosts
+
+- name: End of tasks debug message
+  debug:
+    msg: "All preparation role tasks completed successfully for {{ inventory_hostname }}"
+  when: (reboot_result is defined and reboot_result is succeeded) or set_timezone_result is succeeded
