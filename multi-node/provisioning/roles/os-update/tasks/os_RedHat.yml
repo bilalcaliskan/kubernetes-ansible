@@ -11,8 +11,8 @@
     name: "*"
     state: latest
     exclude: kube*
-  when: ansible_facts['os_family'] == "RedHat"
   register: update_result
+  ignore_errors: yes
   tags: os-update
 
 - name: reboot hosts to fully-affect updates
@@ -23,7 +23,6 @@
     test_command: uptime
   when: 
   - update_result.changed == true
-  - ansible_facts['os_family'] == "RedHat"
   register: reboot_result
   tags: os-update
 

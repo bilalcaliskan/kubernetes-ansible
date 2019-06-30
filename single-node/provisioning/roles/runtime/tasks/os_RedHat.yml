@@ -1,0 +1,9 @@
+---
+
+- name: include install runtime task
+  import_tasks: "{{ container_runtime }}/os_RedHat_install_{{ container_runtime }}.yml
+  tags: "{{ container_runtime }}"
+
+- name: include post installation task
+  import_tasks: "{{ container_runtime }}/os_RedHat_{{ container_runtime }}_post_install.yml"
+  tags: "{{ container_runtime }}"

@@ -1,0 +1,10 @@
+---
+
+- name: Main playbook execution
+  hosts: kubernetes-cluster
+  serial: "100%"
+  roles:
+    - os-update
+    #- preparation
+    #- docker
+    #- kubernetes

@@ -1,0 +1,26 @@
+---
+
+- name: Import variables
+  include_vars: "os_{{ ansible_facts['os_family'] }}.yml"
+  tags:
+  - import
+  - docker
+
+- name: add user vagrant to docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+  register: add_user_result
+  tags: docker
+
+- name: change cgroup of docker daemon
+  template:
+    src: docker.service.j2
+    dest: "{{ systemd_docker_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  register: change_cgroup_result
+  notify: reload and restart docker
+  tags: docker
