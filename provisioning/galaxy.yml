@@ -1,0 +1,13 @@
+namespace: "bilalcaliskan"
+name: "kubernetes"
+version: "1.0.0"
+authors: 
+  - "bilalcaliskan"
+tags:
+  - configuration
+  - kubernetes
+  - installation
+  - orchestration
+license:
+  - "MIT"
+repository: "https://www.github.com/bilalcaliskan/kubernetes-ansible"

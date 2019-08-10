@@ -1,0 +1,5 @@
+- src: bilalcaliskan.docker
+  version: "1.0.0"
+
+- src: bilalcaliskan.os-update
+  version: "1.0.0"

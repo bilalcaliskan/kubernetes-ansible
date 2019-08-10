@@ -1,9 +1,0 @@
----
-
-- import_tasks: os_RedHat.yml
-  when: ansible_facts['os_family'] == "RedHat"
-  tags: preparation
-
-- import_tasks: os_Debian.yml
-  when: ansible_facts['os_family'] == "Debian"
-  tags: preparation

@@ -1,5 +1,0 @@
----
-
-- name: Import runtime tasks
-  import_tasks: "{{ container_runtime }}/os_RedHat_main.yml"
-  tags: "{{ container_runtime }}"

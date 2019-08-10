@@ -1,3 +1,0 @@
----
-
-container_runtime: crio  # [crio, docker]
