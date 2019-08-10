@@ -28,11 +28,10 @@
   tags: docker
 
 - name: start and enable docker service
-  service: 
+  service:
     name: docker
     state: started
     enabled: yes
   when: install_docker_result is succeeded
   register: start_docker_result
   tags: docker
-

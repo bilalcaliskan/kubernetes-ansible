@@ -1,5 +1,10 @@
 - src: bilalcaliskan.docker
   version: "1.0.0"
+  name: docker
 
 - src: bilalcaliskan.os-update
   version: "1.0.0"
+  name: os-update
+
+# To install the roles using a role file, use the -r REQUIREMENTS-FILE option on the project root directory:
+#     ansible-galaxy install -r roles/requirements.yml -p roles
